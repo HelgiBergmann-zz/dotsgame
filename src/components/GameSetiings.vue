@@ -68,6 +68,13 @@ export default {
           this.$store.dispatch('startGame', payload);
       },
       startPlay() {
+        if (!this.getChosenSetting.settings) {
+            alert('Chose game mode');
+            return;
+        } else if (!this.playerName){
+            alert('Enter your name')
+            return;
+        }
         if (this.getGameStarted) return;
         this.$store.dispatch('fillGameFields');
       }

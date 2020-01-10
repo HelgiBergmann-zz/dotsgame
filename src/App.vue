@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
     <Home msg="Welcome to Your Vue.js App"/>
+    <div style="display:flex; justify-content: flex-end"> Make by <img style="margin-left: 12px; width:100%; max-width:20px;" alt="Vue logo" src="./assets/logo.png"></div>
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default {
   },
   created() {
     this.$store.dispatch('updateGameSettings');
+    this.$store.dispatch('updateGameWinners');
   }
 }
 </script>
@@ -27,5 +28,6 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  padding: 20px;
 }
 </style>

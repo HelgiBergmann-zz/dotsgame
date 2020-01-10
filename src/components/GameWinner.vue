@@ -1,6 +1,6 @@
 <template>
     <div style="position:relative;">
-        <h3 style="position:absolute;width: 100%;left:50%; max-width: 280px; margin-left: -140px;" class="text-center">{{getWinner.winner}} won!</h3>
+        <div style="position:absolute;width: 100%;left:50%; margin-top:40px; max-width: 280px; margin-left: -140px;" class="lead text-center">{{getWinner.winner}} won!</div>
     </div>   
 </template>
 

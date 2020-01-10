@@ -4,12 +4,17 @@ import axios from 'axios';
 
 Vue.use(Vuex)
 const URLSettings = "https://starnavi-frontend-test-task.herokuapp.com/game-settings";
-// const URLWinners = "https://starnavi-frontend-test-task.herokuapp.com/winners"
+const URLWinners = "https://starnavi-frontend-test-task.herokuapp.com/winners";
 export const Status = {
     default: 0,
     active: 1,
     player: 2,
     ai: 4,
+}
+const getDate = () => {
+    var d = new Date();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return d.getHours() + ':' + d.getMinutes() + '; ' + d.getDate() + ' ' + monthNames[d.getMonth()] + ' ' + d.getFullYear();
 }
 
 export const store = new Vuex.Store({
@@ -35,9 +40,7 @@ export const store = new Vuex.Store({
             date: null
         },
         winner: null,
-        winners: {
-
-        },
+        winners: null,
     },
     actions: {
         updateGameSettings({commit}) {
@@ -45,18 +48,35 @@ export const store = new Vuex.Store({
             commit('UPDATE_GAME_SETTINGS', response.data)
           })
         },
+        updateGameWinners({commit, getters}) {
+            if (getters.getWinner) {
+                axios.post(URLWinners, {
+                  ...getters.getWinner
+                }).then((response) => {
+                  commit('UPDATE_GAME_WINNERS', response.data)
+                })
+            } else {
+                axios.get(URLWinners).then((response) => {
+                    commit('UPDATE_GAME_WINNERS', response.data)
+                  });
+            }  
+        },
        startGame({commit}, payload) {
             commit('UPDATE_CHOSEN_SETTING', payload)
             commit('GENERATE_GAME_FIELDS');
         },
-        fillGameFields({commit, getters})  {
+        fillGameFields({commit, getters, dispatch})  {
             if(!getters.getGameStarted && getters.getWinner) commit('GENERATE_GAME_FIELDS');
 
             const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
             async function asyncForEach(length, callback) {
                 for (let index = 0; index < length; index++) {
                   await callback();
-                  if(getters.getWinner) break;
+                  if (getters.getWinner) {
+                    dispatch('updateGameWinners');
+                    break;
+                  }
+                  
                 }
             }
             asyncForEach(getters.getFields.length, async() => {
@@ -70,12 +90,16 @@ export const store = new Vuex.Store({
         },
         playerGetPoint({commit}) {
             commit('PLAYER_GET_POINT');
+            commit('CALCULATE_WINNER');
         }
 
     },
     mutations: {
         UPDATE_GAME_SETTINGS(state, payload) {
             state.gameSetting = payload;
+        },
+        UPDATE_GAME_WINNERS(state, payload) {
+            state.winners = payload;
         },
         UPDATE_CHOSEN_SETTING(state, payload) {
             state.chosenSetting = payload;
@@ -108,20 +132,20 @@ export const store = new Vuex.Store({
             state.player.score++;
         },
         CALCULATE_WINNER(state) {
-            const winnerScore = Math.round(state.totalScore * 50 / 100);
+            const scoreForWin = Math.round(state.totalScore * 50 / 100);
             const setWinner= (name) => {
                 state.winner = {};
-                state.winner.date = new Date().toLocaleString();
+                state.winner.date = getDate();
                 state.winner.winner = name;
                 state.player.score = 0;
                 state.computer.score = 0;
                 state.gameStarted = false;
             }
-            if (state.computer.score >= winnerScore) {
+            if (state.computer.score >= scoreForWin) {
                 setWinner(state.computer.name)
             }
 
-            if (state.player.score >= winnerScore) {
+            if (state.player.score >= scoreForWin) {
                 setWinner(state.player.name)
             }
 
@@ -136,6 +160,7 @@ export const store = new Vuex.Store({
         getRandomNums: (state) => state.gameRandomNums,
         getRandomUnit: (state) => state.gameRandomUnit,
         getWinner: (state) => state.winner,
+        getWinners: (state) => state.winners
     }
 
 });

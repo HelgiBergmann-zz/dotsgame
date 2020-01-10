@@ -1,8 +1,13 @@
 <template>
-  <div class="hello">
-    <game-settings></game-settings>
-    <game-winner v-if="getWinner"></game-winner>
-    <game-fields></game-fields>
+  <div class="row">
+    <div class="col-sm">
+      <game-settings></game-settings>
+      <game-winner v-if="getWinner"></game-winner>
+      <game-fields></game-fields>
+   </div>
+   <div class="col-sm">
+      <game-winners></game-winners>
+   </div>
   </div>
 </template>
 
@@ -10,12 +15,14 @@
 import GameSettings from './GameSetiings.vue';
 import GameFields from './GameFields.vue';
 import GameWinner from './GameWinner';
+import GameWinners from './GameWinners';
 export default {
   name: 'Home',
   components: {
     GameSettings,
     GameFields,
-    GameWinner
+    GameWinner,
+    GameWinners,
   },
   props: {
     msg: String

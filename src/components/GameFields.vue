@@ -1,6 +1,6 @@
 <template>
 <div style="padding-top: 100px; width: 50%; margin: 0 auto;">
-    <div style="display:flex; flex-flow: row wrap">
+    <div v-if="getFields" style="display:flex; flex-flow: row wrap; border-top: 1px solid #cccccc; border-right: 1px solid #cccccc">
         <div :class="{
             'active': box.status == getStatus.active, 
             'aipoint' :  box.status == getStatus.ai,
@@ -9,7 +9,7 @@
              v-for="(box) in getFields" :key="box.id"
             @click="preventClick(box) && chooseBox()"
             :style="`padding-bottom:calc(100% / ${getChosenSetting.settings.field};
-                     border:2px solid gray; width:calc(100% / ${getChosenSetting.settings.field})`"
+                     border-bottom:1px solid #cccccc; border-left:1px solid #cccccc; ; width:calc(100% / ${getChosenSetting.settings.field})`"
             :id="`id-${box.id}`">
         </div>
     </div
